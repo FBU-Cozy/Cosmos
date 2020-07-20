@@ -1,4 +1,5 @@
-# parse-server-example
+# Cosmos
+## parse-server-example
 
 Example project using the parse-server module on Express.
 
