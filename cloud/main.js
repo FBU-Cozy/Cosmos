@@ -1,6 +1,8 @@
-Parse.Cloud.useMasterKey();
 
 Parse.Cloud.job("generatePairingCodes", async (request) =>  {
+
+  Parse.Cloud.useMasterKey();
+
   // params: passed in the job call
   // headers: from the request that triggered the job
   // log: the ParseServer logger passed in the request
@@ -21,7 +23,7 @@ Parse.Cloud.job("generatePairingCodes", async (request) =>  {
 
   for(let i = 0; i < result.length; i++){
     result[i].set('myCode', getRandomPairingCode());
-    await result[i].save({useMasterKey:true});
+    await result[i].save();
   }
 
 });
