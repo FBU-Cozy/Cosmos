@@ -6,14 +6,14 @@ Parse.Cloud.job("myJob", async (request) =>  {
   const { params, headers, log, message } = request;
   message("I just started");
 
-  const query = new Parse.Query('User')
+  const query = new Parse.Query('_User')
   const result = await query.find();
 
   function getRandomPairingCode() {
     let max = 60466175;
     let min = 1679616;
     let randNumberInRange = Math.random() * (max - min) + min
-    return Math.floor(randNumberInRange).toString(36);
+    return (Math.floor(randNumberInRange)).toString(36);
   }
 
   for(let i = 0; i < result.length; i++){
