@@ -1,4 +1,4 @@
-Parse.Cloud.job("myJob", async (request) =>  {
+Parse.Cloud.job("generatePairingCodes", async (request) =>  {
   // params: passed in the job call
   // headers: from the request that triggered the job
   // log: the ParseServer logger passed in the request
@@ -6,6 +6,8 @@ Parse.Cloud.job("myJob", async (request) =>  {
   const { params, headers, log, message } = request;
   message("I just started");
 
+  //Job gets all the users and assigns a new random 5-digit pairing code.
+  //To be used with Heroku Scheduler on a daily basis.
   const query = new Parse.Query('_User')
   const result = await query.find();
 
