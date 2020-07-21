@@ -43,7 +43,7 @@ Parse.Cloud.define('pushChannelTest', function(request, response) {
   response.success('success');
 });
 
-Parse.Cloud.job("setPairingCodesJob", (request) =>  {
+Parse.Cloud.job("myJob", (request) =>  {
   // params: passed in the job call
   // headers: from the request that triggered the job
   // log: the ParseServer logger passed in the request
@@ -65,6 +65,8 @@ Parse.Cloud.job("setPairingCodesJob", (request) =>  {
     await result[i].save();
   }
 
+  message("I just started");
+  return getRandomPairingCode(request);
 });
 
 // iOS push testing
