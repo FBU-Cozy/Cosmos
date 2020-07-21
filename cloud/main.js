@@ -21,7 +21,7 @@ Parse.Cloud.job("generatePairingCodes", async (request) =>  {
     return (Math.floor(randNumberInRange)).toString(36);
   }
 
-  users.forEach(user => {
+  users.forEach(async (user) => {
     user.set('myCode', getRandomPairingCode());
     await user.save(null, {useMasterKey: true});
   });
