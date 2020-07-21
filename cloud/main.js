@@ -1,3 +1,28 @@
+Parse.Cloud.job("myJob", async (request) =>  {
+  // params: passed in the job call
+  // headers: from the request that triggered the job
+  // log: the ParseServer logger passed in the request
+  // message: a function to update the status message of the job object
+  const { params, headers, log, message } = request;
+  message("I just started");
+
+  const query = new Parse.Query('User')
+  const result = await query.find();
+
+  function getRandomPairingCode() {
+    let max = 60466175;
+    let min = 1679616;
+    let randNumberInRange = Math.random() * (max - min) + min
+    return Math.floor(randNumberInRange).toString(36);
+  }
+
+  for(let i = 0; i < result.length; i++){
+    result[i].set('myCode', getRandomPairingCode());
+    await result[i].save();
+  }
+
+});
+
 // Android push test
 // To be used with:
 // https://github.com/codepath/ParsePushNotificationExample
