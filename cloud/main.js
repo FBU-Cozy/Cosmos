@@ -49,8 +49,17 @@ Parse.Cloud.job("myJob", (request) =>  {
   // log: the ParseServer logger passed in the request
   // message: a function to update the status message of the job object
   const { params, headers, log, message } = request;
+
+  (10000000).toString(36);
   message("I just started");
-  return doSomethingVeryLong(request);
+  return getRandomPairingCode();
+
+  function getRandomPairingCode() {
+    let max = 60466175;
+    let min = 1679616;
+    let randNumberInRange = Math.random() * (max - min) + min
+    return Math.floor(randNumberInRange).toString(36);
+  }
 });
 
 // iOS push testing
