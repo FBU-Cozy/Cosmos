@@ -12,7 +12,7 @@ Parse.Cloud.job("generatePairingCodes", async (request) =>  {
   //Job gets all the users and assigns a new random 5-digit pairing code.
   //To be used with Heroku Scheduler on a daily basis.
   const query = new Parse.Query(Parse.User)
-  const result = await query.find();
+  const users = await query.find({useMasterKey:true});
 
   function getRandomPairingCode() {
     let max = 60466175;
@@ -21,10 +21,10 @@ Parse.Cloud.job("generatePairingCodes", async (request) =>  {
     return (Math.floor(randNumberInRange)).toString(36);
   }
 
-  for(let i = 0; i < result.length; i++){
-    result[i].set('myCode', getRandomPairingCode());
-    await result[i].save();
-  }
+  users.forEach(user => {
+    user.set('myCode', getRandomPairingCode());
+    await user.save(null, {useMasterKey: true});
+  });
 
 });
 
