@@ -43,21 +43,31 @@ Parse.Cloud.define('pushChannelTest', function(request, response) {
   response.success('success');
 });
 
+Parse.Cloud.job("myJob", (request) =>  {
+  // params: passed in the job call
+  // headers: from the request that triggered the job
+  // log: the ParseServer logger passed in the request
+  // message: a function to update the status message of the job object
+  const { params, headers, log, message } = request;
+  message("I just started");
+  return doSomethingVeryLong(request);
+});
+
 // iOS push testing
 Parse.Cloud.define("iosPushTest", function(request, response) {
 
-  // request has 2 parameters: params passed by the client and the authorized user                                                                                                                               
+  // request has 2 parameters: params passed by the client and the authorized user
   var params = request.params;
   var user = request.user;
 
-  // Our "Message" class has a "text" key with the body of the message itself                                                                                                                                    
+  // Our "Message" class has a "text" key with the body of the message itself
   var messageText = params.text;
 
   var pushQuery = new Parse.Query(Parse.Installation);
-  pushQuery.equalTo('deviceType', 'ios'); // targeting iOS devices only                                                                                                                                          
+  pushQuery.equalTo('deviceType', 'ios'); // targeting iOS devices only
 
   Parse.Push.send({
-    where: pushQuery, // Set our Installation query                                                                                                                                                              
+    where: pushQuery, // Set our Installation query
     data: {
       alert: "Message: " + messageText
     }
@@ -69,4 +79,3 @@ Parse.Cloud.define("iosPushTest", function(request, response) {
 
   response.success('success');
 });
-
