@@ -15,9 +15,9 @@ Parse.Cloud.job("generatePairingCodes", async (request) =>  {
   const users = await query.find({useMasterKey:true});
 
   function getRandomPairingCode() {
-    let max = 60466175;
-    let min = 1679616;
-    let randNumberInRange = Math.random() * (max - min) + min
+    const max = 60466175;
+    const min = 1679616;
+    const randNumberInRange = Math.random() * (max - min) + min
     return (Math.floor(randNumberInRange)).toString(36);
   }
 
