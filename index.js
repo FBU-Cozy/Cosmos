@@ -9,13 +9,13 @@ var path = require('path');
 var databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
 
 if (!databaseUri) {
-  console.log('DATABASE_URI not specified, falling back to localhost.');
+    console.log('DATABASE_URI not specified, falling back to localhost.');
 }
 
 var pushConfig = {};
 
 if (process.env.FCM_API_KEY) {
-    pushConfig['android'] = { apiKey: process.env.FCM_API_KEY || ''};
+    pushConfig['android'] = { apiKey: process.env.FCM_API_KEY || '' };
 }
 
 if (process.env.APNS_ENABLE) {
@@ -36,20 +36,20 @@ if (process.env.S3_ENABLE) {
     filesAdapter = new S3Adapter(
         process.env.AWS_ACCESS_KEY,
         process.env.AWS_SECRET_ACCESS_KEY,
-        {bucket: process.env.AWS_BUCKET_NAME, bucketPrefix: "", directAccess: true}
+        { bucket: process.env.AWS_BUCKET_NAME, bucketPrefix: "", directAccess: true }
     );
 }
 
 var api = new ParseServer({
-  databaseURI: databaseUri || 'mongodb://localhost:27017/dev',
-  cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
-  appId: process.env.APP_ID || 'myAppId',
-  masterKey: process.env.MASTER_KEY || '', //Add your master key here. Keep it secret!
-  push: pushConfig,
-  filesAdapter: filesAdapter,
-  liveQuery: { classNames: ["Message"]},
-  publicServerURL: process.env.SERVER_URL || 'http://localhost/parse',
-  serverURL: process.env.SERVER_URL || 'http://localhost/parse'  // needed for Parse Cloud and push notifications
+    databaseURI: databaseUri || 'mongodb://localhost:27017/dev',
+    cloud: process.env.CLOUD_CODE_MAIN || __dirname + '/cloud/main.js',
+    appId: process.env.APP_ID || 'myAppId',
+    masterKey: process.env.MASTER_KEY || '', //Add your master key here. Keep it secret!
+    push: pushConfig,
+    filesAdapter: filesAdapter,
+    liveQuery: { classNames: ["Message"] },
+    publicServerURL: process.env.SERVER_URL || 'http://localhost/parse',
+    serverURL: process.env.SERVER_URL || 'http://localhost/parse'  // needed for Parse Cloud and push notifications
 });
 // Client-keys like the javascript key or the .NET key are not necessary with parse-server
 // If you wish you require them, you can set them as options in the initialization above:
@@ -65,8 +65,8 @@ var mountPath = process.env.PARSE_MOUNT || '/parse';
 app.use(mountPath, api);
 
 // Parse Server plays nicely with the rest of your web routes
-app.get('/', function(req, res) {
-  res.status(200).send('I dream of being a website.  Please star the parse-server repo on GitHub!');
+app.get('/', function (req, res) {
+    res.status(200).send('I dream of being a website.  Please star the parse-server repo on GitHub!');
 });
 
 var port = process.env.PORT || 1337;
@@ -80,12 +80,16 @@ ParseServer.createLiveQueryServer(httpServer);
 var io = socket(httpServer)
 
 io.on('connection', socket => {
-    socket.on('test', () => {
-        console.log("New channel created");
-        socket.emit("Hello World");
+    socket.on('test', (id,data) => {
+        console.log("New channel created data:", data,"id",id);
+        socket.to("test").emit("Hello World inside");
+
     })
+
+    socket.to("test").emit("Hello World outside");
+
 });
 
-httpServer.listen(port, function() {
+httpServer.listen(port, function () {
     console.log('parse-server-example running on port ' + port + '.');
 });
