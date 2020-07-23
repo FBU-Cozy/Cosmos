@@ -82,6 +82,7 @@ var io = socket(httpServer)
 io.on('connection', socket => {
     socket.on('test', () => {
         console.log("New channel created");
+        socket.emit("Hello World");
     })
 });
 
