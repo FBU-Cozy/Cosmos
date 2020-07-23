@@ -3,6 +3,7 @@
 
 var express = require('express');
 var ParseServer = require('parse-server').ParseServer;
+var socket = require('socket.io');
 var path = require('path');
 
 var databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
@@ -70,9 +71,20 @@ app.get('/', function(req, res) {
 
 var port = process.env.PORT || 1337;
 var httpServer = require('http').createServer(app);
-httpServer.listen(port, function() {
-    console.log('parse-server-example running on port ' + port + '.');
-});
 
 // This will enable the Live Query real-time server
 ParseServer.createLiveQueryServer(httpServer);
+
+
+// This will enable the Socket.io real-time server
+var io = socket(httpServer)
+
+io.on('connection', socket => {
+    socket.on('test', () => {
+        console.log("New channel created");
+    })
+});
+
+httpServer.listen(port, function() {
+    console.log('parse-server-example running on port ' + port + '.');
+});
