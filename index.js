@@ -1,3 +1,4 @@
+require('dotenv').config();
 // Example express application adding the parse-server module to expose Parse
 // compatible API routes.
 
@@ -5,6 +6,12 @@ var express = require('express');
 var ParseServer = require('parse-server').ParseServer;
 var socket = require('socket.io');
 var path = require('path');
+const {
+    userJoin,
+    getCurrentUser,
+    userLeave,
+    getSpaceUsers
+  } = require('./utils/users');
 
 var databaseUri = process.env.DATABASE_URI || process.env.MONGODB_URI;
 
@@ -75,21 +82,63 @@ var httpServer = require('http').createServer(app);
 // This will enable the Live Query real-time server
 ParseServer.createLiveQueryServer(httpServer);
 
-
 // This will enable the Socket.io real-time server
-var io = socket(httpServer)
+const io = socket(httpServer)
 
-io.on('connection', socket => {
-    socket.on('test', (id,data) => {
-        console.log("New channel created data:", data,"id",id);
-        socket.to("test").emit("Hello World inside");
+io.on('connection', (socket) => {
 
-    })
+    console.log('Client connected: ' + socket.id);
 
-    socket.to("test").emit("Hello World outside");
+    //Listen for user joiining room
+    socket.on('join', ({userID, spaceID}) => {
 
+        try{
+            const user = userJoin(socket.id, userID, spaceID);
+
+            console.log(user);
+
+            socket.join(user.space);
+
+            //inform other clients about new user
+            socket.broadcast.to(user.space).emit('joiningUser', user.userID)
+
+            // Send users and room info
+            io.to(user.space).emit('joinedUser', getSpaceUsers(user.space).userID)
+        }
+        catch(err){
+            console.log("User failed to join Thumbkiss: " + err.message);
+        }
+
+    });
+
+    // Listen for thumbkiss cursor
+    socket.on('cursor', coordinates => {
+
+        try{
+
+            const user = getCurrentUser(socket.id);
+
+            socket.broadcast.to(user.space).emit('cursor', coordinates);
+        }
+        catch(err){
+            console.log("User failed to send over cursor: " + err.message);
+        }
+
+    });
+
+    // Runs when client disconnects
+    socket.on('disconnect', () => {
+
+        const leavingUser = userLeave(socket.id);
+
+        if (leavingUser) {
+            socket.broadcast.to(leavingUser.space).emit('userLeft', leavingUser.userID)
+            console.log("A user disconnected");
+        };
+    });
 });
 
+// How do you turn this on?
 httpServer.listen(port, function () {
     console.log('parse-server-example running on port ' + port + '.');
 });
